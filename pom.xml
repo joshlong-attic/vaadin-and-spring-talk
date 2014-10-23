@@ -123,9 +123,9 @@
 
                     <!-- We are doing "inplace" gwt compilation
                     but into subdir VAADIN/widgetsets -->
-                    <webappDirectory>src/main/resources/public/VAADIN/widgetsets
+                    <webappDirectory>src/main/resources/VAADIN/widgetsets
                     </webappDirectory>
-                    <hostedWebapp>src/main/resources/public/VAADIN/widgetsets
+                    <hostedWebapp>src/main/resources/VAADIN/widgetsets
                     </hostedWebapp>
                     <noServer>true</noServer>
                     <!-- Remove draftCompile when project is ready -->
@@ -172,7 +172,7 @@
                             <outputDirectory>${basedir}/target/classes/VAADIN</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/src/main/public/VAADIN</directory>
+                                    <directory>${basedir}/src/main/resources/VAADIN</directory>
                                 </resource>
                             </resources>
                         </configuration>
