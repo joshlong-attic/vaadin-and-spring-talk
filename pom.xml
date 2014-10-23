@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>bootiful-vaadin</groupId>
+    <artifactId>places</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.1.8.RELEASE</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-social-facebook</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- vaadin bits -->
+        <dependency>
+            <groupId>org.vaadin.spring</groupId>
+            <artifactId>spring-boot-vaadin</artifactId>
+            <version>0.0.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-server</artifactId>
+            <version>${vaadin.version}</version>
+            <exclusions>
+                <!-- Remove some obsolete stuff not needed by server side Vaadin apps -->
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.vaadin.external.google</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>vaadin-theme-compiler</artifactId>
+                    <groupId>com.vaadin</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.peimari</groupId>
+            <artifactId>maddon</artifactId>
+            <version>1.15</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin.addon</groupId>
+            <artifactId>vaadin-charts</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.addon</groupId>
+            <artifactId>easyuploads</artifactId>
+            <version>7.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.addon</groupId>
+            <artifactId>v-leaflet</artifactId>
+            <version>0.5.7</version>
+        </dependency>
+    </dependencies>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <vaadin.version>7.3.2</vaadin.version>
+        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+        <geotools.version>10.2</geotools.version>
+        <start-class>places.Application</start-class>
+        <java.version>1.8</java.version>
+    </properties>
+
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.plugin.version}</version>
+                <configuration>
+                    <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
+
+                    <!-- We are doing "inplace" gwt compilation
+                    but into subdir VAADIN/widgetsets -->
+                    <webappDirectory>src/main/resources/public/VAADIN/widgetsets
+                    </webappDirectory>
+                    <hostedWebapp>src/main/resources/public/VAADIN/widgetsets
+                    </hostedWebapp>
+                    <noServer>true</noServer>
+                    <!-- Remove draftCompile when project is ready -->
+                    <draftCompile>true</draftCompile>
+                    <persistentunitcachedir>${project.build.directory}/gwtdirt</persistentunitcachedir>
+                    <compileReport>false</compileReport>
+                    <style>OBF</style>
+                    <strict>true</strict>
+                    <!-- Symbol maps etc, not needed in vaadin app, just target them outside war -->
+                    <deploy>${project.build.directory}/gwt-deploy</deploy>
+                </configuration>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <!-- if you don't specify any modules, the plugin will find them -->
+                            <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
+                            </modules> -->
+                        </configuration>
+                        <goals>
+                            <goal>clean</goal>
+                            <goal>resources</goal>
+                            <!-- These are non functional currently with spring boot directory structure
+                            <goal>update-theme</goal>
+                            <goal>compile-theme</goal>
+                             -->
+                            <goal>update-widgetset</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <!-- ensure fresly compiled widgetset to jar, TODO check
+                    vaadin plugin configuration could get rid of this -->
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/VAADIN</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/public/VAADIN</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>vaadin-addons</id>
+            <url>http://maven.vaadin.com/vaadin-addons</url>
+        </repository>
+    </repositories>
+
+</project>

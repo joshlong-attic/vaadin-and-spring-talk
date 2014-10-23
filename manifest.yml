@@ -1,0 +1,14 @@
+---
+applications:
+- name: bootiful-vaadin-places
+  memory: 512M
+  instances: 1
+  host: bootiful-vaadin-places-${random-word}
+  domain: cfapps.io
+  path: target/places.jar
+  services:
+    - bootiful-vaadin-places-mongodb
+  env:
+    SPRING_PROFILES_ACTIVE: cloud
+    DEBUG: "true"
+    debug: "true"

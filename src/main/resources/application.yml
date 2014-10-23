@@ -1,0 +1,16 @@
+facebook:
+  appId: 205992766192598
+  appSecret: 5fac7e9d41a9bfbbfc3b7e3d2a869dce
+
+vaadin:
+  servlet:
+    urlMapping: /ui/*
+
+
+
+---
+spring:
+  profiles: cloud
+  data:
+    mongodb:
+        uri: ${vcap.services.bootiful-vaadin-places-mongodb.credentials.uri}
